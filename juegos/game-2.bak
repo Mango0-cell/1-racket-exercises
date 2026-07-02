@@ -1,0 +1,86 @@
+(require (lib "graphics.ss" "graphics"))
+(open-graphics)
+
+(define ancho 800)
+(define alto 600)
+(define tamano-bloque 50)
+(define v (open-viewport "Laberinto mortal" ancho alto))
+
+(define bmp (read-bmp "/mnt/data/Captura de pantalla 2025-05-15 133553.bmp"))
+
+;; Dibujar bloque
+(define (dibujar-bloque x y color)
+  ((draw-solid-rectangle v)
+   (make-posn (* x tamano-bloque) (* y tamano-bloque))
+   tamano-bloque
+   tamano-bloque
+   color))
+
+;; Mapa del laberinto: 1 = pared, 0 = camino
+(define laberinto
+  '((1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+    (1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1)
+    (1 0 1 1 0 1 0 1 1 0 1 1 1 1 0 1)
+    (1 0 0 1 0 0 0 0 1 0 0 0 0 1 0 1)
+    (1 1 0 1 1 1 1 0 1 1 1 1 0 1 0 1)
+    (1 0 0 0 0 0 1 0 0 0 0 1 0 0 0 1)
+    (1 1 1 1 1 0 1 1 1 1 0 1 1 1 1 1)))
+
+(define filas (length laberinto))
+(define columnas (length (car laberinto)))
+
+(define (dibujar-laberinto)
+  (for-each
+   (lambda (fila y)
+     (for-each
+      (lambda (valor x)
+        (if (= valor 1)
+            (dibujar-bloque x y "black")
+            (dibujar-bloque x y "white")))
+      fila
+      (iota columnas)))
+   laberinto
+   (iota filas)))
+
+(define (colisiona? x y)
+  (or (< x 0)
+      (< y 0)
+      (>= y filas)
+      (>= x columnas)
+      (= (list-ref (list-ref laberinto y) x) 1)))
+
+(define (reiniciar)
+  (clear-viewport v)
+  (dibujar-laberinto)
+  (loop 1 1))
+
+(define (mostrar-imagen-bmp)
+  ((draw-bitmap v) (make-posn 200 100) bmp)
+  (sleep 2))
+
+(define (loop x y)
+  (dibujar-bloque x y "blue")
+  (let ((key (key-value (get-key-press v))))
+    (dibujar-bloque x y "white")
+    (define new-x x)
+    (define new-y y)
+    (cond [(equal? key 'up)    (set! new-y (- y 1))]
+          [(equal? key 'down)  (set! new-y (+ y 1))]
+          [(equal? key 'left)  (set! new-x (- x 1))]
+          [(equal? key 'right) (set! new-x (+ x 1))])
+    (if (colisiona? new-x new-y)
+        (begin
+          (mostrar-imagen-bmp)
+          (reiniciar))
+        (if (and (= new-x (- columnas 2)) (= new-y (- filas 2)))
+            (begin
+              (dibujar-bloque new-x new-y "green")
+              ((draw-string v) (make-posn 600 500) "¡Ganaste!" "black")
+              (sleep 2)
+              (close-viewport v))
+            (loop new-x new-y)))))
+
+;; Comenzar juego
+(clear-viewport v)
+(dibujar-laberinto)
+(loop 1 1)

@@ -1,0 +1,90 @@
+(require (lib "graphics.ss" "graphics"))
+
+;Abre la librería gráfica y abre una ventana
+(open-graphics)
+(define ventana (open-viewport "LA NAVE IMPERIAL" 800 600))
+
+ 
+;MENSAJE DE EXPLICACION
+((draw-string ventana) (make-posn 300 200) "Si das click sobre mi...COMIENZA EL JUEGO!!" "BLUE")
+(sleep 3)
+
+
+; Dibuja un ovni de manera aleatoria hasta que se de click sobre el ovni.
+(define (ovni-aleatorio x y)
+  (cond 
+     [(< x 800); Condicion para que se ejecute el juego
+     (begin
+       
+       ;Dibuja la nave
+       (dibujar-nave x y)     
+      
+      ; Espera un segundo
+      (sleep 1)
+      
+      ;borra la nave que dibujó antes
+      ((draw-viewport ventana) "white")
+      
+      ;ready-mouse-click: devuelve verdadero si se dió click.
+      (if (ready-mouse-click ventana)
+          (begin
+            ;si se da click en el área donde se dibuja la nave, Imprime "Ganaste",se cierra la ventana y se envia 800 a la funcion para que termine el
+            ;ciclo y si no se sigue con el proceso aleatorio.
+            
+            ;posn-x: captura la posicion x de lo que retorna la funcion query-mouse, es decir la posicion x donde se dio click.
+            ;posn-y: actua de igual manera que posn-x, solo que con la posicion y.
+            ;query-mouse-posn: devuelve la posicion (x,y) donde se dió click.
+             (if (and (and (<(posn-x(query-mouse-posn ventana))(+ x 35)) (>(posn-x(query-mouse-posn ventana)) x)) 
+                 (and (<(posn-y(query-mouse-posn ventana)) (+ y 13)) (>(posn-y(query-mouse-posn ventana)) y ) ))
+                 (begin
+                   ((draw-string ventana) (make-posn 380 300) "POR FIN!!" "GREEN")
+                   (sleep 2)
+                   (close-viewport ventana)
+                   (close-graphics)
+                   (ovni-aleatorio 800 600)
+                 )
+                (begin
+                  (mensaje-perdedor (random 7))
+                  (ovni-aleatorio (random 800) (random 600))
+                 )
+                )
+             
+           )  
+      (ovni-aleatorio (random 800) (random 600)))
+      
+      )
+     ] 
+   )
+  )
+
+;Mensaje para quien no dá click en la nave.
+(define (mensaje-perdedor n)
+  (cond
+    [(= n 0) ((draw-string ventana) (make-posn 350 500) "VAMOS, INTÉNTALO!!" "BLACK")  ]
+    [(= n 1) ((draw-string ventana) (make-posn 320 500) "QUE TE PASA!!" "BLUE")  ]
+    [(= n 2) ((draw-string ventana) (make-posn 350 500) "JA, JA, JA..." "BROWN")  ]
+    [(= n 3) ((draw-string ventana) (make-posn 330 500) "NO TE CREAS TAN LISTO" "BLUE")  ]
+    [(= n 4) ((draw-string ventana) (make-posn 330 500) "DEBES MEJORAR" "RED")  ]
+    [(= n 5) ((draw-string ventana) (make-posn 330 500) "ERES TAN, PERO TAN LENTO" "BLUE") ]
+    [(= n 6) ((draw-string ventana) (make-posn 330 500) "ME ESTOY ABURRIENDO" "BLUE")  ]
+  )
+)
+
+;Dibuja la nave
+(define (dibujar-nave x y)
+      ((draw-solid-ellipse ventana) (make-posn x y) 30 10 "RED"); cuerpo
+      ((draw-ellipse ventana) (make-posn x y) 30 10 "BLACK")
+      ((draw-solid-rectangle ventana) (make-posn (- x 10) (+ y 5)) 50 2 "red"); alas
+      ((draw-line ventana)(make-posn (- x 10) (+ y 5)) (make-posn (- x 15) (+ y 7)) "red")
+      ((draw-line ventana)(make-posn (- x 10) (+ y 6)) (make-posn (- x 15) (+ y 8)) "red")
+      ((draw-line ventana)(make-posn (+ x 40) (+ y 5)) (make-posn (+ x 45) (+ y 7)) "red")
+      ((draw-line ventana)(make-posn (+ x 40) (+ y 6)) (make-posn (+ x 45) (+ y 8)) "red")
+      ((draw-solid-rectangle ventana) (make-posn (+ x 4) (+ y 2)) 5 2 "BLACK"); ojo izquierdo
+      ((draw-solid-rectangle ventana) (make-posn (+ x 23) (+ y 2)) 5 2 "BLACK"); ojo derecho
+      ((draw-line ventana)(make-posn (+ x 15) (+ y 10)) (make-posn (+ x 7) (+ y 14)) "red")
+      ((draw-line ventana)(make-posn (+ x 15) (+ y 10)) (make-posn (+ x 23) (+ y 14)) "red")
+     
+)
+
+
+(ovni-aleatorio (random 800) (random 600))
