@@ -1,0 +1,58 @@
+(require(lib "graphics.ss" "graphics"))
+(open-graphics)
+(define window1(open-viewport  "graphics" 1000 700))
+((draw-line window1) (make-posn 0 233.33) (make-posn 1000 233.33)"black")
+((draw-line window1) (make-posn 0 466.66)(make-posn 1000 466.66)"black")
+
+(define (move-box x y count)
+  (if (<= count 3)
+      (begin
+        ((draw-solid-rectangle window1) (make-posn x y) 50 50"black")
+        (sleep 0.2)
+        ((clear-solid-rectangle window1) (make-posn x y) 50 50)
+        (move-box (+ 237 x) y (+ 1 count)))
+      (if (<= count 5)
+          (begin
+            ((draw-solid-rectangle window1) (make-posn x y) 50 50"black")
+            (sleep 0.2)
+            ((clear-solid-rectangle window1) (make-posn x y) 50 50)
+            (move-box x (+ 90 y) (+ 1 count)))
+          (if (<= count 9)
+              (begin
+                ((draw-solid-rectangle window1) (make-posn x y) 50 50"black")
+                (sleep 0.2)
+                ((clear-solid-rectangle window1) (make-posn x y) 50 50)
+                (move-box (- x 237) y (+ 1 count)))
+              (if (<= count 12)
+                  (begin
+                    ((draw-solid-rectangle window1) (make-posn x y) 50 50"black")
+                    (sleep 0.2)
+                    ((clear-solid-rectangle window1) (make-posn x y) 50 50)
+                    (move-box x (- y 90) (+ 1 count))))))))
+
+(define(line x y)
+  (if (and(< x 985)(= y 250))
+      (begin
+        ((draw-pixel window1)(make-posn x y)"green")
+        (sleep 0.001)
+        (line(+ x 1)y ))
+      (if (and(>= x 985)(< y 450))
+          (begin
+            ((draw-pixel window1)(make-posn x y)"green")
+            (sleep 0.001)
+            (line x (+ 1 y )))
+          (if (and(>= y 450)(> x 15))
+              (begin
+                ((draw-pixel window1)(make-posn x y)"green")
+                (sleep 0.001)
+                (line(- x 1)y ))
+              (if (and (<= x 15) (> y 250))
+                  (begin
+            ((draw-pixel window1)(make-posn x y)"green")
+            (sleep 0.001)
+            (line x (- y 1 ))))))))
+
+     
+
+;(move-box 0 0 0)
+;(line 15 250)  

@@ -1,0 +1,10 @@
+(require(lib "graphics.ss" "graphics"))
+(open-graphics)
+(open-viewport "my window" 800 600)
+(open-viewport "otrer window"(make-posn 250 200))
+(sleep 4)
+(define window(open-viewport  "my window" 800 600))
+;(close-graphics
+
+
+
