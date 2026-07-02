@@ -1,0 +1,36 @@
+(define (intervalo a)
+  (if (and (> a 1000) (< a 9999))
+      "está en el intervalo"
+      "no esta en el intervalo"))
+
+(intervalo 1234)
+
+(define (extraer-digitos n)
+  (let* ((unidades (modulo n 10))
+         (decenas (modulo (quotient n 10) 10))
+         (centenas (modulo (quotient n 100) 10))
+         (unidades-mil (modulo (quotient n 1000) 10)))
+    (values unidades-mil centenas decenas unidades)))
+
+(define (mayor4 a b c d)
+  (if (> a b)
+      (if (> a c)
+          (if (> a d) a d)
+          (if (> c d) c d))
+      (if (> b c)
+          (if (> b d) b d)
+          (if (> c d) c d))))
+
+(define (menor4 a b c d)
+  (if (< a b)
+      (if (< a c)
+          (if (< a d) a d)
+          (if (< c d) c d))
+      (if (< b c)
+          (if (< b d) b d)
+          (if (< c d) c d))))
+
+(call-with-values (lambda () (extraer-digitos 1234))
+  (lambda (um c d u)
+    (display(+ (mayor4 um c d u) (menor4 um c d u)))
+    (newline)))
